@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Canvas } from "react-three-fiber";
+import SkyBox from "./components/SkyBox";
+import Planets from "./components/Planets";
+import Player from "./components/Player";
 
-function App() {
+export default function App() {
+  const handleKeyDown = (e) => {
+    //console.log(e.keyCode);//38 40
+    if (e.keyCode === 38) {
+      //up arrow, speed up
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Canvas
+      onKeyDown={handleKeyDown}
+      tabIndex="0"
+      camera={{ fov: 100, zoom: 5, position: [0, 2, 10] }}
+    >
+      <directionalLight intensity={1} />
+      <ambientLight intensity={0.3} />
+      <SkyBox />
+      <Planets props={{ numPlanets: 2 }} />
+      <Player />
+    </Canvas>
   );
 }
-
-export default App;
+// tabindex="0" for keyboard controls

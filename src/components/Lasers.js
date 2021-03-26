@@ -1,4 +1,5 @@
-import { useLoader, useFrame } from "react-three-fiber";
+import { useFrame } from "react-three-fiber";
+//import { useLoader, useFrame } from "react-three-fiber";
 import { SCALE, distance } from "../gameHelper";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { playerState } from "../recoil/player/playerData";
@@ -73,7 +74,7 @@ function Lasers() {
         >
           <boxBufferGeometry
             attach="geometry"
-            args={[0.001 * SCALE, 0.001 * SCALE, 0.3 * SCALE]}
+            args={[0.001 * SCALE, 0.001 * SCALE, 0.9 * SCALE]}
           />
           <meshStandardMaterial attach="material" emissive="blue" wireframe />
         </mesh>

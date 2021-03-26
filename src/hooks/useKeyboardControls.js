@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-function useKeyboardControls(key, callback) {
+function useKeyboardControls(keyCode, callback) {
   const callbackRef = useRef(callback);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ function useKeyboardControls(key, callback) {
   useEffect(() => {
     function handleKeyDown({ code }) {
       //console.log("code:", code);
-      if (key === code) {
+      if (keyCode === code) {
         callbackRef.current(code);
       }
     }
@@ -22,7 +22,7 @@ function useKeyboardControls(key, callback) {
       document.removeEventListener("keydown", handleKeyDown);
       //document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [key]);
+  }, [keyCode]);
 }
 
 export default useKeyboardControls;

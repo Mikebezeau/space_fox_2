@@ -67,7 +67,7 @@ function Planets() {
 
   //CREATE PLANETS
   useEffect(() => {
-    handleAddPlanet(30);
+    handleAddPlanet(12);
     return null;
   }, []);
   //-------------------

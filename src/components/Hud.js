@@ -22,7 +22,6 @@ function fireLaser(player, setLasers, laserSwitch) {
     player.rotation.z
   );
   lazerDummy.translateX(((laserSwitch % 2) - 0.5) * 0.04 * SCALE);
-  laserSwitch += 1;
 
   const offsetPos = {
     x: lazerDummy.position.x,
@@ -69,7 +68,6 @@ function fireLaser(player, setLasers, laserSwitch) {
 // Manages creating lasers with the correct initial velocity on click.
 function Hud() {
   const player = useRecoilValue(playerState);
-  const lasers = useRecoilValue(lasersState);
   const setLasers = useSetRecoilState(lasersState); //useSetRecoilState make setter
 
   const [laserSwitch, setLaserSwitch] = useState(0);

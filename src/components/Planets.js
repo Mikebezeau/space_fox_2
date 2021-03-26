@@ -1,37 +1,84 @@
-//import { useRef } from "react";
+import { useEffect } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { planetsState } from "../recoil/planets/planetsData";
+import { SCALE, getRandomInt } from "../gameHelper";
 
-import { SCALE } from "../gameHelper";
+import useKeyboardControls from "../hooks/useKeyboardControls";
 
-const createPlanets = () => {
-  let planets = [];
-  console.log("numPlanets", 3);
-  // Outer loop to create parent
-  for (let i = 0; i < 100; i++) {
-    //Create the parent and add the children
-    const planetR = (i * 1 + 5) * SCALE;
-    planets.push(
-      <mesh
-        visible
-        position={[0, 200 * i * SCALE, -planetR - 1000 * (i + 1) * SCALE]}
-        rotation={[0, 0, 0]}
-      >
-        <sphereGeometry attach="geometry" args={[planetR, 30, 30]} />
-        <meshStandardMaterial
-          attach="material"
-          color="purple"
-          roughness={1}
-          metalness={0}
-          wireframe
-        />
-      </mesh>
-    );
+function Planet({ index }) {
+  const planets = useRecoilValue(planetsState);
+
+  const planet = planets[index];
+  //console.log("planet", index);
+
+  return (
+    <mesh
+      visible
+      position={[planet.position.x, planet.position.y, planet.position.z]}
+      rotation={[0, 0, 0]}
+    >
+      <sphereGeometry attach="geometry" args={[planet.radius, 30, 30]} />
+      <meshStandardMaterial
+        attach="material"
+        color={planet.color}
+        emissive={planet.color}
+        opacity={planet.opacity}
+        transparent={planet.transparent}
+        roughness={planet.roughness}
+        metalness={planet.metalness}
+        //wireframe
+      />
+    </mesh>
+  );
+}
+
+function Planets() {
+  const [planets, setPlanets] = useRecoilState(planetsState);
+
+  //KEYBOARD CONTROLS FOR PLANETS
+  function handleAddPlanet(num) {
+    for (let i = 0; i < num; i++) {
+      const colors = ["#173f5f", "#20639b", "#3caea3", "#f6d55c", "#ed553b"];
+      const radius = SCALE * 4 * (getRandomInt(5) + planets.length * 2);
+      const a = 0.2;
+      const b = 20 * SCALE;
+      const angle = 20 * (planets.length + i + 2);
+      const x = (a + b * angle) * Math.cos(angle);
+      const z = (a + b * angle) * Math.sin(angle);
+      setPlanets((prev) => [
+        ...prev,
+        {
+          name: "Planet",
+          roughness: 1,
+          metalness: 0,
+          color: colors[getRandomInt(4)],
+          radius: radius,
+          opacity: 1,
+          transparent: false,
+          position: { x, y: 0, z },
+          rotation: { x: 0, y: 0, z: 0 },
+        },
+      ]);
+    }
   }
-  return planets;
-};
-const Planets = () => {
-  // Returns a mesh at GROUND_HEIGHT below the player. Scaled to 5000, 5000 with 128 segments.
-  // X Rotation is -Math.PI / 2 which is 90 degrees in radians.
-  return <>{createPlanets(10)}</>;
-};
+  //console.log("num planets", planets.length);
+  useKeyboardControls("KeyP", () => handleAddPlanet(2));
+  //-------------------
+
+  //CREATE PLANETS
+  useEffect(() => {
+    handleAddPlanet(30);
+    return null;
+  }, []);
+  //-------------------
+
+  return (
+    <>
+      {planets.map((planet, index) => (
+        <Planet key={index} index={index} />
+      ))}
+    </>
+  );
+}
 
 export default Planets;

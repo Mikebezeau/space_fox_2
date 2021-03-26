@@ -9,3 +9,7 @@ export const distance = (p1, p2) => {
 
   return Math.sqrt(a * a + b * b + c * c);
 };
+
+export const getRandomInt = (max) => {
+  return Math.floor(Math.random() * Math.floor(max));
+};

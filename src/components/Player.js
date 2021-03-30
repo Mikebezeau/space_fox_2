@@ -3,12 +3,11 @@ import { Object3D, Quaternion, Vector3 } from "three";
 import { useLoader, useFrame } from "react-three-fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 //import { useRecoilState } from "recoil";
-import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { playerState } from "../recoil/player/playerData";
 import { planetsState } from "../recoil/planets/planetsData";
 import Loading from "./Loading";
 import { distance, SCALE } from "../gameHelper";
-import useKeyboardControls from "../hooks/useKeyboardControls";
 import Hud from "./Hud";
 import TextCanvas from "./TextCanvas";
 
@@ -84,7 +83,11 @@ function ArWing() {
       ship.current.rotation.z
     );
 
-    camera.updateProjectionMatrix();
+    //camera.updateProjectionMatrix();
+    /*
+    Note that after making changes to most of these properties you 
+    will have to call .updateProjectionMatrix for the changes to take effect.
+    */
 
     //close to any planets?
     setPlayer((prev) => ({
@@ -152,42 +155,6 @@ function ArWing() {
 }
 
 function Player() {
-  const [player, setPlayer] = useRecoilState(playerState);
-  //const player = useRecoilValue(playerState);
-  //const setPlayer = useSetRecoilState(playerState);
-
-  //KEYBOARD CONTROLS FOR SHIP
-  //SPEED UP
-  function handleSpeedUp() {
-    //console.log(player);
-    setPlayer((prev) => ({
-      ...prev,
-      speed: player.speed + 0.2,
-      speedMessage: "SPEED " + (player.speed + 0.2).toFixed(1),
-    }));
-  }
-  useKeyboardControls("ArrowUp", handleSpeedUp);
-  //SPEED DOWN
-  function handleSpeedDown() {
-    setPlayer((prev) => ({
-      ...prev,
-      speed: player.speed - 0.2,
-      speedMessage: "SPEED " + (player.speed - 0.2).toFixed(1),
-    }));
-  }
-  useKeyboardControls("ArrowDown", handleSpeedDown);
-  //BEGIN/END ORBIT
-  function handleToggleOrbit() {
-    setPlayer((prev) => ({
-      ...prev,
-      orbit: prev.nearPlanet && !prev.orbit ? 1 : 0,
-      //orbitMessage:""
-    }));
-    //console.log(player.orbit, player.nearPlanet, player.orbiting);
-  }
-  useKeyboardControls("ArrowRight", handleToggleOrbit);
-  //-------------------
-
   return (
     <Suspense fallback={<Loading />}>
       <ArWing />
@@ -196,3 +163,11 @@ function Player() {
 }
 
 export default Player;
+
+/*
+
+    <Suspense fallback={<Loading />}>
+      <ArWing />
+    </Suspense>
+
+*/

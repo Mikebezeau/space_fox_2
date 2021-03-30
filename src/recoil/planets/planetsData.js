@@ -9,6 +9,7 @@ export const planetsState = atom({
     {
       name: "sun",
       color: "#ffffff",
+      texture_map: null,
       radius: 14,
       opacity: 1,
       transparent: "true",

@@ -1,7 +1,12 @@
+import { SCALE } from "../gameHelper";
+
 const Loading = () => {
   return (
     <mesh visible position={[0, 0, 0]} rotation={[0, 0, 0]}>
-      <sphereGeometry attach="geometry" args={[1, 16, 16]} />
+      <sphereGeometry
+        attach="geometry"
+        args={[1 * SCALE, 16 * SCALE, 16 * SCALE]}
+      />
       <meshStandardMaterial
         attach="material"
         color="white"

@@ -1,27 +1,56 @@
-import { useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useEffect, Suspense } from "react";
+import { useSetRecoilState, useRecoilValue } from "recoil";
+import Loading from "./Loading";
+import { useLoader } from "react-three-fiber";
+import { TextureLoader } from "three/src/loaders/TextureLoader.js";
 import { planetsState } from "../recoil/planets/planetsData";
 import { SCALE, getRandomInt } from "../gameHelper";
 
-import useKeyboardControls from "../hooks/useKeyboardControls";
+//import jupitermap from "./images/jupitermap.jpg";
 
-function Planet({ index }) {
-  const planets = useRecoilValue(planetsState);
+//import useKeyboardControls from "../hooks/useKeyboardControls";
 
-  const planet = planets[index];
+function Planet({ planet, index }) {
   //console.log("planet", index);
+
+  // create a texture loader.
+  //const textureLoader = new TextureLoader();
+  // load a texture
+  const texture_maps = useLoader(TextureLoader, [
+    "images/maps/sunmap.jpg",
+    "images/maps/earthmap1k.jpg",
+    "images/maps/jupitermap.jpg",
+    "images/maps/mercurymap.jpg",
+    "images/maps/moonmap1k.jpg",
+    "images/maps/moonmap1k.jpg",
+    "images/maps/venusmap.jpg",
+  ]);
 
   return (
     <mesh
+      castShadow={index === 0 ? "false" : "true"}
+      receiveShadow={index === 0 ? "false" : "true"}
       visible
       position={[planet.position.x, planet.position.y, planet.position.z]}
-      rotation={[0, 0, 0]}
+      rotation={[planet.rotation.x, planet.rotation.y, planet.rotation.z]}
     >
-      <sphereGeometry attach="geometry" args={[planet.radius, 30, 30]} />
+      {planet.name === "sun" && (
+        <sphereGeometry attach="geometry" args={[planet.radius, 30, 30]} />
+      )}
+      {planet.name === "planet" && (
+        <sphereGeometry attach="geometry" args={[planet.radius, 10, 10]} />
+      )}
+      {planet.name === "asteroid" && (
+        <boxGeometry
+          attach="geometry"
+          args={[planet.radius, planet.radius, planet.radius]}
+        />
+      )}
       <meshStandardMaterial
+        map={texture_maps[index === 1 ? 0 : getRandomInt(6 + 1)]}
         attach="material"
-        color={planet.color}
-        emissive={planet.color}
+        //color={planet.color}
+        //emissive={planet.color}
         opacity={planet.opacity}
         transparent={planet.transparent}
         roughness={planet.roughness}
@@ -33,13 +62,15 @@ function Planet({ index }) {
 }
 
 function Planets() {
-  const [planets, setPlanets] = useRecoilState(planetsState);
+  const planets = useRecoilValue(planetsState);
+  const setPlanets = useSetRecoilState(planetsState);
 
   //KEYBOARD CONTROLS FOR PLANETS
   function handleAddPlanet(num) {
     for (let i = 0; i < num; i++) {
       const colors = ["#173f5f", "#20639b", "#3caea3", "#f6d55c", "#ed553b"];
-      const radius = SCALE * 4 * (getRandomInt(5) + planets.length * 2);
+      const radius =
+        ((SCALE * (i + 1)) / 3) * 4 * (getRandomInt(5) + planets.length * 2);
       const a = 0.2;
       const b = 20 * SCALE;
       const angle = 20 * (planets.length + i + 2);
@@ -48,7 +79,7 @@ function Planets() {
       setPlanets((prev) => [
         ...prev,
         {
-          name: "Planet",
+          name: "planet",
           roughness: 1,
           metalness: 0,
           color: colors[getRandomInt(4)],
@@ -62,12 +93,47 @@ function Planets() {
     }
   }
   //console.log("num planets", planets.length);
-  useKeyboardControls("KeyP", () => handleAddPlanet(2));
+  //useKeyboardControls("KeyP", () => handleAddPlanet(2));
   //-------------------
 
+  //dirty function to try to make asteroids
+  function handleAddAsteroidRing(num) {
+    //Any point (x,y) on the path of the circle is x = rsin(θ), y = rcos(θ)
+    //angle 115, radius 12: (x,y) = (12*sin(115), 12*cos(115))
+    for (let i = 0; i < num; i++) {
+      const colors = ["#999", "#aaa", "#bbb", "#ccc", "#ddd"];
+      const radius = SCALE * 2;
+      const ringRadius = SCALE * 300;
+      const angle = (360 / num) * i;
+      const x = ringRadius * Math.sin(angle);
+      const z = ringRadius * Math.cos(angle);
+      //console.log("xz", x, z);
+      //console.log("r s", ringRadius, Math.sin(angle));
+      setPlanets((prev) => [
+        ...prev,
+        {
+          name: "asteroid",
+          roughness: 1,
+          metalness: 1,
+          color: colors[getRandomInt(6)],
+          texture_map: null,
+          radius: radius,
+          opacity: 1,
+          transparent: false,
+          position: { x, y: 0, z },
+          rotation: {
+            x: getRandomInt(100) / 1000,
+            y: getRandomInt(100) / 1000,
+            z: getRandomInt(100) / 1000,
+          }, //getRandomInt(100)/1000
+        },
+      ]);
+    }
+  }
   //CREATE PLANETS
   useEffect(() => {
-    handleAddPlanet(12);
+    handleAddPlanet(9);
+    handleAddAsteroidRing(11);
     return null;
   }, []);
   //-------------------
@@ -75,7 +141,9 @@ function Planets() {
   return (
     <>
       {planets.map((planet, index) => (
-        <Planet key={index} index={index} />
+        <Suspense key={"sus" + index} fallback={<Loading />}>
+          <Planet key={index} planet={planet} />
+        </Suspense>
       ))}
     </>
   );

@@ -64,8 +64,8 @@ import { EffectComposer, Bloom } from "react-postprocessing";
 export default function App() {
   return (
     <>
-      <Canvas camera={{ fov: 80, zoom: 5, position: [0, 2, 10] }}>
-        <pointLight intensity={0.7} />
+      <Canvas shadowMap camera={{ fov: 80, zoom: 5, position: [0, 2, 10] }}>
+        <pointLight castShadow intensity={0.7} />
         <ambientLight intensity={0.3} />
         <SkyBox />
         <RecoilRoot>
@@ -78,10 +78,11 @@ export default function App() {
             luminanceThreshold={0}
             luminanceSmoothing={0.9}
             height={300}
-            opacity={0.3}
+            opacity={1}
           />
         </EffectComposer>
       </Canvas>
+
       <Stats />
     </>
   );
